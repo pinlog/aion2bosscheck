@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>키아의 Aion2 보스쳌 | 아이온2 주간 시간표 · 보스 · 쟁 알림</title>
+<meta name="description" content="아이온2 주간 타임테이블 프로그램. 서버·그룹별 어비스 아티팩트 점령전, 필드보스, 아그로 시간을 한눈에 보고 시작 전 음성 알림을 받으세요.">
+<meta property="og:title" content="키아의 Aion2 보스쳌">
+<meta property="og:description" content="아이온2 주간 시간표 · 보스 · 쟁 타임테이블 + 음성 알림 + 게임 위 mini 알림창">
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#0b0f17; --bg2:#111826; --card:#141c2b; --line:rgba(255,255,255,.08); --text:#e6e9ef; --mute:#97a1b3;
+    --accent:#2dd4bf; --accent2:#38bdf8; --warm:#d4b062; }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:'Noto Sans KR','Malgun Gothic',system-ui,sans-serif; line-height:1.65; -webkit-font-smoothing:antialiased; }
+  a { color:inherit; }
+  .wrap { max-width:1040px; margin:0 auto; padding:0 24px; }
+  .glow { position:absolute; inset:0 0 auto 0; height:620px; pointer-events:none; z-index:0;
+    background:radial-gradient(600px 300px at 18% 20%, rgba(45,212,191,.16), transparent 70%), radial-gradient(500px 280px at 85% 30%, rgba(56,189,248,.12), transparent 70%); }
+  header { position:relative; z-index:1; display:flex; align-items:center; justify-content:space-between; padding:22px 0; }
+  .brand { font-weight:800; letter-spacing:-.01em; display:flex; align-items:center; gap:10px; }
+  .dot { width:10px; height:10px; border-radius:50%; background:var(--accent); box-shadow:0 0 14px var(--accent); }
+  nav a { margin-left:22px; color:var(--mute); text-decoration:none; font-size:.92rem; }
+  nav a:hover { color:var(--text); }
+  .hero { position:relative; z-index:1; display:grid; grid-template-columns:1.1fr .9fr; gap:48px; align-items:center; padding:56px 0 72px; }
+  .eyebrow { color:var(--accent); font-weight:700; font-size:.85rem; letter-spacing:.08em; }
+  h1 { font-size:clamp(2.1rem,5vw,3.3rem); line-height:1.15; margin:.35em 0 .45em; letter-spacing:-.03em; font-weight:800; }
+  h1 em { font-style:normal; background:linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .lead { color:var(--mute); font-size:1.08rem; max-width:34em; margin:0 0 30px; }
+  .cta { display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+  .btn { display:inline-flex; align-items:center; gap:10px; padding:15px 26px; border-radius:12px; font-weight:700; text-decoration:none; font-size:1rem; transition:.2s; }
+  .btn.primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#05211f; box-shadow:0 10px 30px -10px rgba(45,212,191,.6); }
+  .btn.primary:hover { transform:translateY(-2px); box-shadow:0 14px 34px -10px rgba(45,212,191,.8); }
+  .btn.ghost { border:1px solid var(--line); color:var(--text); }
+  .btn.ghost:hover { background:rgba(255,255,255,.05); }
+  .meta { margin-top:14px; color:var(--mute); font-size:.85rem; min-height:1.4em; }
+  /* 히어로 오른쪽: mini 알림창 모형 */
+  .stage { position:relative; height:300px; border-radius:20px; border:1px solid var(--line); overflow:hidden;
+    background:radial-gradient(circle at 20% 30%,#3d6150 0,transparent 48%),radial-gradient(circle at 85% 75%,#6a402f 0,transparent 44%),linear-gradient(160deg,#1d2b35,#0c1218); }
+  .stage::after { content:"게임 화면 위 mini 알림창"; position:absolute; left:16px; bottom:12px; font-size:.75rem; color:rgba(255,255,255,.45); }
+  .mini { position:absolute; right:22px; top:26px; width:300px; height:86px; transform-origin:100% 0; transform:scale(.95); border-radius:10px; padding:24px 12px 8px;
+    background:rgba(15,18,28,.78); border:1px solid rgba(255,255,255,.07); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; text-align:center; line-height:1.3;
+    box-shadow:0 14px 40px -12px rgba(0,0,0,.7); }
+  .mini .tag { position:absolute; top:3px; left:12px; height:18px; display:flex; align-items:center; font-size:15px; font-weight:700; color:#b9a48c; line-height:1; }
+  .mini .lk { position:absolute; top:3px; right:6px; width:18px; height:18px; color:#b8975a; display:flex; align-items:center; justify-content:center; }
+  .mini .n { font-size:19.5px; font-weight:700; color:#d8dce2; }
+  .mini .c { font-size:19.5px; font-weight:800; color:#4ac2b7; }
+  .tbl { position:absolute; left:18px; top:150px; right:18px; display:grid; grid-template-columns:repeat(4,1fr); gap:6px; opacity:.9; }
+  .tbl span { background:rgba(255,255,255,.07); border:1px solid var(--line); border-radius:8px; padding:6px 4px; text-align:center; font-size:.72rem; color:#cbd2de; }
+  .tbl span.on { background:rgba(45,212,191,.2); border-color:rgba(45,212,191,.5); color:#bff3ec; font-weight:700; }
+  section { position:relative; z-index:1; padding:64px 0; border-top:1px solid var(--line); }
+  h2 { font-size:1.7rem; margin:0 0 8px; letter-spacing:-.02em; }
+  .sub { color:var(--mute); margin:0 0 34px; }
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .card { background:linear-gradient(180deg,var(--card),#10172a); border:1px solid var(--line); border-radius:16px; padding:22px; transition:.2s; }
+  .card:hover { border-color:rgba(45,212,191,.35); transform:translateY(-3px); }
+  .ic { width:38px; height:38px; border-radius:10px; display:grid; place-items:center; background:rgba(45,212,191,.12); color:var(--accent); font-size:1.2rem; margin-bottom:14px; }
+  .card h3 { margin:0 0 6px; font-size:1.05rem; }
+  .card p { margin:0; color:var(--mute); font-size:.92rem; }
+  .steps { counter-reset:s; display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .step { counter-increment:s; background:var(--card); border:1px solid var(--line); border-radius:16px; padding:22px; }
+  .step::before { content:counter(s); display:grid; place-items:center; width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#05211f; font-weight:800; margin-bottom:12px; }
+  .step h3 { margin:0 0 6px; font-size:1.02rem; } .step p { margin:0; color:var(--mute); font-size:.92rem; }
+  .note { margin-top:18px; padding:14px 18px; border-radius:12px; background:rgba(212,176,98,.08); border:1px solid rgba(212,176,98,.25); color:#d9c79a; font-size:.9rem; }
+  .shots { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .shots figure { margin:0; } .shots img { width:100%; border-radius:12px; border:1px solid var(--line); display:block; }
+  .shots figcaption { color:var(--mute); font-size:.85rem; margin-top:8px; }
+  details { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 20px; margin-bottom:10px; }
+  summary { cursor:pointer; font-weight:700; } details p { color:var(--mute); margin:10px 0 0; font-size:.93rem; }
+  footer { border-top:1px solid var(--line); padding:34px 0 60px; color:var(--mute); font-size:.85rem; }
+  footer a { color:var(--accent); text-decoration:none; }
+  @media (max-width:860px) { .hero{grid-template-columns:1fr; padding-top:30px;} .grid,.steps,.shots{grid-template-columns:1fr;} nav{display:none;} .mini{right:50%; transform:translateX(50%) scale(.9); transform-origin:50% 0;} }
+</style>
+</head>
+<body>
+<div class="glow"></div>
+<div class="wrap">
+  <header>
+    <div class="brand"><span class="dot"></span>키아의 Aion2 보스쳌</div>
+    <nav><a href="#features">기능</a><a href="#start">시작하기</a><a href="#faq">FAQ</a></nav>
+  </header>
+
+  <div class="hero">
+    <div>
+      <div class="eyebrow">AION2 TIME TABLE</div>
+      <h1>아이온2 <em>주간 시간표</em>,<br>보스부터 쟁까지 한눈에</h1>
+      <p class="lead">아티팩트 점령전, 어비스 필드보스, 균열지대와 쟁탈전까지!! 컨텐츠 시간을 확인하고 플레이일정을 스케치해보세요.</p>
+      <div class="cta">
+        <a id="dl" class="btn primary" href="https://github.com/pinlog/aion2bosscheck/releases/latest">⬇ 최신 버전 다운로드</a>
+      </div>
+      <div class="meta" id="meta">Windows 10 / 11 · 무료</div>
+    </div>
+    <div class="stage" aria-hidden="true">
+      <div class="mini">
+        <div class="tag">🔥 다가오는 주요 컨텐츠</div>
+        <div class="lk"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+        <div class="n">목 22:00 | 균열지대</div><div class="c">⏳ 01:23:45</div>
+      </div>
+      <div class="tbl"><span>20:00 시공쟁탈전</span><span>21:20 아티팩트</span><span class="on">22:00 균열지대</span><span>23:00 시공쟁탈전</span>
+        <span>21:45 필드보스</span><span>22:30 나흐마</span><span>03:51 아그로</span><span>15:51 아그로</span></div>
+    </div>
+  </div>
+</div>
+
+<section id="features"><div class="wrap">
+  <h2>핵심 기능</h2>
+  <div class="grid">
+    <div class="card"><div class="ic">🎨</div><h3>서버별 컬러 자동 적용</h3><p>서버를 선택하면 천족·마족에 맞는 컬러로 전체 테이블이 자동으로 바뀝니다.</p></div>
+    <div class="card"><div class="ic">🧭</div><h3>서버 그룹 자동 세팅</h3><p>내 서버의 그룹을 고르면 어비스 아티팩트 점령전과 필드보스 시간이 그룹에 맞게 즉시 정렬됩니다.</p></div>
+    <div class="card"><div class="ic">🔔</div><h3>시작 전 음성 알림</h3><p>알림을 켜 두면 컨텐츠가 시작되기 전에 음성으로 알려 줍니다. 게임에 집중하세요.</p></div>
+    <div class="card"><div class="ic">⏳</div><h3>남은 시간 · 하이라이트</h3><p>다음 컨텐츠까지 남은 시간을 보여 주고, 진행 중이거나 곧 시작하는 컨텐츠는 하이라이트로 표시합니다.</p></div>
+    <div class="card"><div class="ic">🧱</div><h3>아그로 젠 타임 직접 입력</h3><p>남은 시간을 입력하면 12시간 주기로 타임테이블에 바로 반영됩니다.</p></div>
+    <div class="card"><div class="ic">🪟</div><h3>창 크기 · 위치 기억</h3><p>원하는 크기로 조절하면 다음 실행 때 같은 위치와 설정으로 열립니다.</p></div>
+    <div class="card"><div class="ic">📌</div><h3>게임 위 mini 알림창</h3><p>다가오는 주요 컨텐츠를 게임 화면 위에 작게 띄웁니다. 위치·크기·투명도를 조절할 수 있습니다.</p></div>
+    <div class="card"><div class="ic">🔄</div><h3>클릭 한 번 업데이트</h3><p>새 버전이 나오면 NEW UPDATE 표시가 뜹니다. 눌러서 확인만 하면 자동으로 설치되고 다시 실행돼요.</p></div>
+    <div class="card"><div class="ic">🔒</div><h3>게임과 독립</h3><p>게임 클라이언트와 통신하거나 게임 데이터를 읽지 않는, 시간표 계산 전용 프로그램입니다.</p></div>
+  </div>
+</div></section>
+
+
+
+<section id="start"><div class="wrap">
+  <h2>시작하기</h2><p class="sub">설치부터 사용까지 3단계</p>
+  <div class="steps">
+    <div class="step"><h3>다운로드 · 설치</h3><p>위의 다운로드 버튼으로 설치 파일을 받아 실행하세요. 설치 위치를 고를 수 있습니다.</p></div>
+    <div class="step"><h3>서버 · 그룹 선택</h3><p>[서버 설정]에서 내 서버를 고르고 그룹을 맞추면 시간표가 즉시 내 서버 기준으로 바뀝니다.</p></div>
+    <div class="step"><h3>알림 켜기</h3><p>음성 알림을 켜고, 필요하면 mini 버튼으로 게임 위 알림창을 띄워 두세요.</p></div>
+  </div>
+  <div class="note"><b>내 그룹 확인 방법</b> · CM아지트에서 내 서버의 <b>매칭 그룹</b>을 확인한 뒤, 그룹 편성표(<a href="https://www.inven.co.kr/board/aion2/6444/2359" target="_blank" rel="noopener" style="color:var(--warm)">인벤 소개글</a>)에서 내가 속한 그룹을 찾으세요.</div>
+  <div class="note" style="margin-top:12px">처음 실행할 때 Windows가 “PC를 보호했습니다” 화면을 보여 줄 수 있어요. <b>추가 정보 → 실행</b>을 누르면 계속 진행됩니다. (개인이 만든 무료 프로그램이라 코드 서명이 없습니다.)</div>
+</div></section>
+
+<section id="faq"><div class="wrap">
+  <h2>자주 묻는 질문</h2><p class="sub">&nbsp;</p>
+  <details><summary>무료인가요?</summary><p>네, 무료입니다. 광고도 없습니다.</p></details>
+  <details><summary>게임에 영향을 주거나 계정에 문제가 생기지 않나요?</summary><p>이 프로그램은 게임을 조작하거나 게임 데이터를 읽지 않고, 정해진 일정을 계산해서 보여 주는 시간표입니다. 다만 엔씨소프트와 무관한 비공식 팬 프로그램이며, 사용에 대한 책임은 사용자에게 있습니다.</p></details>
+  <details><summary>업데이트는 어떻게 하나요?</summary><p>새 버전이 있으면 프로그램 상단 버전 옆에 NEW UPDATE가 표시됩니다. 눌러서 확인하면 자동으로 받아 설치하고 다시 실행됩니다. 처음 버전(1.0.0)을 쓰고 계시다면 이 페이지에서 최신 설치 파일을 한 번만 직접 설치해 주세요.</p></details>
+  <details><summary>설정이나 입력한 값은 어디에 저장되나요?</summary><p>내 PC에만 저장됩니다. 서버 선택, 창 위치, 아그로 기준 시각 등은 외부로 전송되지 않습니다.</p></details>
+  <details><summary>게임 위 mini 알림창이 안 보여요.</summary><p>게임을 “창모드” 또는 “전체 창모드”로 실행해 주세요. 전용 전체화면에서는 다른 창이 가려질 수 있습니다. 잠금 해제는 자물쇠를 Alt + 클릭하거나 Ctrl + Alt + L 입니다.</p></details>
+</div></section>
+
+<footer><div class="wrap">
+  <div>키아의 Aion2 보스쳌 · <span id="ver">–</span></div>
+  <div style="margin-top:6px">아이온2는 엔씨소프트의 상표이며, 이 프로그램은 엔씨소프트와 관계없는 비공식 팬 프로그램입니다. · <a href="https://www.inven.co.kr/board/aion2/6444/2359" target="_blank" rel="noopener">인벤 소개글 / 문의</a> · <a href="https://github.com/pinlog/aion2bosscheck/releases">모든 버전</a></div>
+</div></footer>
+
+<script>
+  // 최신 릴리스 정보를 읽어 버튼을 설치 파일 직링크로 바꿉니다. 실패하면 releases/latest 링크가 그대로 동작합니다.
+  (async () => {
+    try {
+      const r = await fetch('https://api.github.com/repos/pinlog/aion2bosscheck/releases/latest', { headers: { Accept: 'application/vnd.github+json' } });
+      if (!r.ok) return;
+      const d = await r.json();
+      const exe = (d.assets || []).find(a => /\.exe$/i.test(a.name));
+      const ver = (d.tag_name || '').replace(/^v/, '');
+      if (exe) document.getElementById('dl').href = exe.browser_download_url;
+      if (ver) {
+        document.getElementById('dl').textContent = '⬇ v' + ver + ' 다운로드';
+        document.getElementById('ver').textContent = 'v' + ver;
+        const date = d.published_at ? new Date(d.published_at).toLocaleDateString('ko-KR') : '';
+        const mb = exe ? (exe.size / 1048576).toFixed(0) + 'MB' : '';
+        document.getElementById('meta').textContent = ['Windows 10 / 11', '무료', mb, date && date + ' 업데이트'].filter(Boolean).join(' · ');
+      }
+    } catch (e) { /* 오프라인 등: 기본 링크 사용 */ }
+  })();
+</script>
+</body>
+</html>
