@@ -3,149 +3,288 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>키아의 Aion2 보스쳌 | 아이온2 주간 시간표 · 보스 · 쟁 알림</title>
-<meta name="description" content="아이온2 주간 타임테이블 프로그램. 서버·그룹별 어비스 아티팩트 점령전, 필드보스, 아그로 시간을 한눈에 보고 시작 전 음성 알림을 받으세요.">
-<meta property="og:title" content="키아의 Aion2 보스쳌">
+<title>BossCheck | 아이온2 주간 시간표 · 보스 · 쟁 알림</title>
+<meta name="description" content="아이온2 주간 타임테이블 프로그램. 서버만 고르면 매칭 그룹이 자동 적용되고, 어비스 아티팩트 점령전·필드보스·균열지대·쟁탈전 시간을 한눈에 보며 시작 전 음성 알림을 받을 수 있습니다.">
+<meta property="og:title" content="BossCheck · 아이온2 주간 시간표">
 <meta property="og:description" content="아이온2 주간 시간표 · 보스 · 쟁 타임테이블 + 음성 알림 + 게임 위 mini 알림창">
 <meta name="color-scheme" content="dark">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
-  :root { --bg:#0b0f17; --bg2:#111826; --card:#141c2b; --line:rgba(255,255,255,.08); --text:#e6e9ef; --mute:#97a1b3;
-    --accent:#2dd4bf; --accent2:#38bdf8; --warm:#d4b062; }
+  :root {
+    --bg:#07090f; --bg2:#0c1019; --card:rgba(255,255,255,.028); --card-h:rgba(255,255,255,.05);
+    --line:rgba(255,255,255,.07); --line2:rgba(255,255,255,.12);
+    --text:#eef1f6; --mute:#8b94a7; --dim:#5d6577;
+    --accent:#3ee0c5; --accent2:#5ab8ff; --gold:#d8b46a;
+    --r:18px;
+  }
   * { box-sizing:border-box; }
-  html { scroll-behavior:smooth; }
-  body { margin:0; background:var(--bg); color:var(--text); font-family:'Noto Sans KR','Malgun Gothic',system-ui,sans-serif; line-height:1.65; -webkit-font-smoothing:antialiased; }
+  html { scroll-behavior:smooth; scroll-padding-top:80px; }
+  body { margin:0; background:var(--bg); color:var(--text);
+    font-family:'Pretendard Variable',Pretendard,'Noto Sans KR','Malgun Gothic',system-ui,sans-serif;
+    line-height:1.65; -webkit-font-smoothing:antialiased; letter-spacing:-.01em; overflow-x:hidden; word-break:keep-all; }
   a { color:inherit; }
-  .wrap { max-width:1040px; margin:0 auto; padding:0 24px; }
-  .glow { position:absolute; inset:0 0 auto 0; height:620px; pointer-events:none; z-index:0;
-    background:radial-gradient(600px 300px at 18% 20%, rgba(45,212,191,.16), transparent 70%), radial-gradient(500px 280px at 85% 30%, rgba(56,189,248,.12), transparent 70%); }
-  header { position:relative; z-index:1; display:flex; align-items:center; justify-content:space-between; padding:22px 0; }
-  .brand { font-weight:800; letter-spacing:-.01em; display:flex; align-items:center; gap:10px; }
-  .dot { width:10px; height:10px; border-radius:50%; background:var(--accent); box-shadow:0 0 14px var(--accent); }
-  nav a { margin-left:22px; color:var(--mute); text-decoration:none; font-size:.92rem; }
+  .wrap { max-width:1120px; margin:0 auto; padding:0 28px; }
+
+  /* 배경 */
+  .bg { position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background:
+      radial-gradient(900px 520px at 12% -8%, rgba(62,224,197,.13), transparent 60%),
+      radial-gradient(800px 480px at 92% 4%, rgba(90,184,255,.11), transparent 60%),
+      var(--bg); }
+  .bg::after { content:""; position:absolute; inset:0;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:64px 64px; opacity:.35;
+    -webkit-mask-image:radial-gradient(ellipse 80% 55% at 50% 0%,#000 30%,transparent 75%);
+            mask-image:radial-gradient(ellipse 80% 55% at 50% 0%,#000 30%,transparent 75%); }
+
+  /* 상단 프레임 */
+  header { position:sticky; top:0; z-index:50; backdrop-filter:blur(14px) saturate(140%); -webkit-backdrop-filter:blur(14px) saturate(140%);
+    background:rgba(7,9,15,.62); border-bottom:1px solid var(--line); }
+  header .wrap { display:flex; align-items:center; justify-content:space-between; height:64px; }
+  .brand { display:flex; align-items:center; gap:10px; text-decoration:none; font-weight:800; font-size:1.12rem; letter-spacing:-.02em; }
+  .logo { width:28px; height:28px; border-radius:8px; display:grid; place-items:center;
+    background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#04201c; box-shadow:0 0 20px -4px rgba(62,224,197,.6); }
+  .brand b { font-weight:800; } .brand b span { color:var(--accent); }
+  .brand .a2 { height:30px; width:auto; margin-left:4px; padding-left:12px; border-left:1px solid var(--line2); opacity:.85; transition:opacity .2s; }
+  .brand:hover .a2 { opacity:1; }
+  nav { display:flex; align-items:center; gap:28px; }
+  nav a { color:var(--mute); text-decoration:none; font-size:.9rem; font-weight:500; transition:color .2s; }
   nav a:hover { color:var(--text); }
-  .hero { position:relative; z-index:1; display:grid; grid-template-columns:1.1fr .9fr; gap:48px; align-items:center; padding:56px 0 72px; }
-  .eyebrow { color:var(--accent); font-weight:700; font-size:.85rem; letter-spacing:.08em; }
-  h1 { font-size:clamp(2.1rem,5vw,3.3rem); line-height:1.15; margin:.35em 0 .45em; letter-spacing:-.03em; font-weight:800; }
-  h1 em { font-style:normal; background:linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
-  .lead { color:var(--mute); font-size:1.08rem; max-width:34em; margin:0 0 30px; }
-  .cta { display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
-  .btn { display:inline-flex; align-items:center; gap:10px; padding:15px 26px; border-radius:12px; font-weight:700; text-decoration:none; font-size:1rem; transition:.2s; }
-  .btn.primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#05211f; box-shadow:0 10px 30px -10px rgba(45,212,191,.6); }
-  .btn.primary:hover { transform:translateY(-2px); box-shadow:0 14px 34px -10px rgba(45,212,191,.8); }
-  .btn.ghost { border:1px solid var(--line); color:var(--text); }
-  .btn.ghost:hover { background:rgba(255,255,255,.05); }
-  .meta { margin-top:14px; color:var(--mute); font-size:.85rem; min-height:1.4em; }
-  /* 히어로 오른쪽: mini 알림창 모형 */
-  .stage { position:relative; height:300px; border-radius:20px; border:1px solid var(--line); overflow:hidden;
-    background:radial-gradient(circle at 20% 30%,#3d6150 0,transparent 48%),radial-gradient(circle at 85% 75%,#6a402f 0,transparent 44%),linear-gradient(160deg,#1d2b35,#0c1218); }
-  .stage::after { content:"게임 화면 위 mini 알림창"; position:absolute; left:16px; bottom:12px; font-size:.75rem; color:rgba(255,255,255,.45); }
-  .mini { position:absolute; right:22px; top:26px; width:300px; height:86px; transform-origin:100% 0; transform:scale(.95); border-radius:10px; padding:24px 12px 8px;
-    background:rgba(15,18,28,.78); border:1px solid rgba(255,255,255,.07); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; text-align:center; line-height:1.3;
-    box-shadow:0 14px 40px -12px rgba(0,0,0,.7); }
-  .mini .tag { position:absolute; top:3px; left:12px; height:18px; display:flex; align-items:center; font-size:15px; font-weight:700; color:#b9a48c; line-height:1; }
-  .mini .lk { position:absolute; top:3px; right:6px; width:18px; height:18px; color:#b8975a; display:flex; align-items:center; justify-content:center; }
-  .mini .n { font-size:19.5px; font-weight:700; color:#d8dce2; }
-  .mini .c { font-size:19.5px; font-weight:800; color:#4ac2b7; }
-  .tbl { position:absolute; left:18px; top:150px; right:18px; display:grid; grid-template-columns:repeat(4,1fr); gap:6px; opacity:.9; }
-  .tbl span { background:rgba(255,255,255,.07); border:1px solid var(--line); border-radius:8px; padding:6px 4px; text-align:center; font-size:.72rem; color:#cbd2de; }
-  .tbl span.on { background:rgba(45,212,191,.2); border-color:rgba(45,212,191,.5); color:#bff3ec; font-weight:700; }
-  section { position:relative; z-index:1; padding:64px 0; border-top:1px solid var(--line); }
-  h2 { font-size:1.7rem; margin:0 0 8px; letter-spacing:-.02em; }
-  .sub { color:var(--mute); margin:0 0 34px; }
-  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
-  .card { background:linear-gradient(180deg,var(--card),#10172a); border:1px solid var(--line); border-radius:16px; padding:22px; transition:.2s; }
-  .card:hover { border-color:rgba(45,212,191,.35); transform:translateY(-3px); }
-  .ic { width:38px; height:38px; border-radius:10px; display:grid; place-items:center; background:rgba(45,212,191,.12); color:var(--accent); font-size:1.2rem; margin-bottom:14px; }
-  .card h3 { margin:0 0 6px; font-size:1.05rem; }
-  .card p { margin:0; color:var(--mute); font-size:.92rem; }
-  .steps { counter-reset:s; display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
-  .step { counter-increment:s; background:var(--card); border:1px solid var(--line); border-radius:16px; padding:22px; }
-  .step::before { content:counter(s); display:grid; place-items:center; width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#05211f; font-weight:800; margin-bottom:12px; }
-  .step h3 { margin:0 0 6px; font-size:1.02rem; } .step p { margin:0; color:var(--mute); font-size:.92rem; }
-  .note { margin-top:18px; padding:14px 18px; border-radius:12px; background:rgba(212,176,98,.08); border:1px solid rgba(212,176,98,.25); color:#d9c79a; font-size:.9rem; }
-  .shots { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
-  .shots figure { margin:0; } .shots img { width:100%; border-radius:12px; border:1px solid var(--line); display:block; }
-  .shots figcaption { color:var(--mute); font-size:.85rem; margin-top:8px; }
-  details { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 20px; margin-bottom:10px; }
-  summary { cursor:pointer; font-weight:700; } details p { color:var(--mute); margin:10px 0 0; font-size:.93rem; }
-  footer { border-top:1px solid var(--line); padding:34px 0 60px; color:var(--mute); font-size:.85rem; }
-  footer a { color:var(--accent); text-decoration:none; }
-  @media (max-width:860px) { .hero{grid-template-columns:1fr; padding-top:30px;} .grid,.steps,.shots{grid-template-columns:1fr;} nav{display:none;} .mini{right:50%; transform:translateX(50%) scale(.9); transform-origin:50% 0;} }
+  nav .nav-dl { color:var(--text); border:1px solid var(--line2); padding:7px 14px; border-radius:10px; }
+  nav .nav-dl:hover { border-color:var(--accent); color:var(--accent); }
+
+  /* 히어로 */
+  .hero { display:grid; grid-template-columns:1.05fr .95fr; gap:56px; align-items:center; padding:88px 0 104px; }
+  .pill { display:inline-flex; align-items:center; gap:8px; font-size:.82rem; font-weight:600; color:#cdeee8;
+    padding:6px 14px 6px 6px; border-radius:99px; background:rgba(62,224,197,.07); border:1px solid rgba(62,224,197,.22); }
+  .pill i { font-style:normal; font-size:.7rem; font-weight:800; letter-spacing:.06em; color:#04201c; background:var(--accent); border-radius:99px; padding:2px 8px; }
+  h1 { font-size:clamp(2.3rem,5.2vw,3.7rem); line-height:1.12; margin:22px 0 20px; letter-spacing:-.045em; font-weight:800; }
+  h1 em { font-style:normal; background:linear-gradient(100deg,var(--accent) 10%,var(--accent2) 90%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .lead { color:var(--mute); font-size:1.1rem; max-width:31em; margin:0 0 36px; }
+  .cta { display:flex; flex-wrap:wrap; gap:12px; }
+  .btn { display:inline-flex; align-items:center; gap:10px; padding:15px 26px; border-radius:14px; font-weight:700; text-decoration:none; font-size:1rem; transition:transform .2s, box-shadow .2s, background .2s; }
+  .btn svg { width:18px; height:18px; }
+  .btn.primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#04201c; box-shadow:0 12px 34px -12px rgba(62,224,197,.75), inset 0 1px 0 rgba(255,255,255,.35); }
+  .btn.primary:hover { transform:translateY(-2px); box-shadow:0 18px 40px -12px rgba(62,224,197,.9), inset 0 1px 0 rgba(255,255,255,.35); }
+  .btn.ghost { border:1px solid var(--line2); color:var(--text); background:rgba(255,255,255,.02); }
+  .btn.ghost:hover { background:rgba(255,255,255,.06); }
+  .meta { margin-top:18px; color:var(--dim); font-size:.86rem; display:flex; align-items:center; gap:8px; min-height:1.4em; }
+  .meta::before { content:""; width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent); }
+
+  /* 히어로 오른쪽: 앱 창 모형 */
+  .stage { position:relative; }
+  .stage::before { content:""; position:absolute; inset:-30px; z-index:-1; border-radius:40px;
+    background:radial-gradient(closest-side,rgba(62,224,197,.18),transparent); filter:blur(10px); }
+  .app { border-radius:var(--r); border:1px solid var(--line2); background:linear-gradient(180deg,#121826,#0b0f18); overflow:hidden;
+    box-shadow:0 40px 80px -30px rgba(0,0,0,.8), 0 0 0 1px rgba(0,0,0,.4); }
+  .app-bar { display:flex; align-items:center; gap:8px; padding:12px 16px; border-bottom:1px solid var(--line); font-size:.78rem; color:var(--mute); }
+  .app-bar .d { width:10px; height:10px; border-radius:50%; background:#2a3142; }
+  .app-bar .t { margin-left:8px; font-weight:600; color:#c9d0dc; }
+  .app-bar .v { margin-left:auto; font-size:.68rem; font-weight:800; color:#04201c; background:var(--accent); padding:2px 7px; border-radius:6px; letter-spacing:.04em; }
+  .app-body { padding:16px; display:grid; gap:7px; }
+  .row { display:grid; grid-template-columns:54px 1fr auto; align-items:center; gap:12px; padding:10px 14px; border-radius:11px;
+    background:rgba(255,255,255,.025); border:1px solid transparent; font-size:.86rem; }
+  .row .tm { font-variant-numeric:tabular-nums; color:var(--mute); font-weight:600; }
+  .row .nm { color:#d4dae4; font-weight:600; }
+  .row .bd { font-size:.7rem; color:var(--mute); border:1px solid var(--line2); border-radius:6px; padding:1px 7px; }
+  .row.on { background:linear-gradient(90deg,rgba(62,224,197,.16),rgba(62,224,197,.03)); border-color:rgba(62,224,197,.35); }
+  .row.on .tm, .row.on .nm { color:#d8fbf5; }
+  .row.on .bd { color:#04201c; background:var(--accent); border-color:var(--accent); font-weight:700; }
+  .row.past { opacity:.38; }
+  .mini { position:absolute; right:-22px; bottom:-34px; width:268px; border-radius:12px; padding:12px 16px 14px;
+    background:rgba(14,17,26,.88); border:1px solid rgba(255,255,255,.09); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    box-shadow:0 24px 50px -16px rgba(0,0,0,.85); text-align:center; line-height:1.35; }
+  .mini .tag { display:flex; justify-content:space-between; align-items:center; font-size:.72rem; font-weight:700; color:#b9a48c; margin-bottom:6px; }
+  .mini .tag svg { color:var(--gold); }
+  .mini .n { font-size:1.02rem; font-weight:700; color:#dfe3ea; }
+  .mini .c { font-size:1.15rem; font-weight:800; color:var(--accent); font-variant-numeric:tabular-nums; }
+  .mini-cap { position:absolute; right:-22px; bottom:-60px; font-size:.72rem; color:var(--dim); }
+
+  /* 섹션 공통 */
+  section { padding:104px 0; }
+  .kicker { font-size:.78rem; font-weight:700; letter-spacing:.14em; color:var(--accent); text-transform:uppercase; margin-bottom:12px; }
+  h2 { font-size:clamp(1.7rem,3.2vw,2.3rem); margin:0 0 12px; letter-spacing:-.035em; line-height:1.25; font-weight:800; }
+  .sub { color:var(--mute); margin:0 0 48px; font-size:1.02rem; }
+
+  /* 기능 */
+  .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+  .card { position:relative; background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:26px 22px 24px; transition:background .25s, border-color .25s, transform .25s; overflow:hidden; }
+  .card::before { content:""; position:absolute; inset:0 0 auto 0; height:1px; background:linear-gradient(90deg,transparent,rgba(62,224,197,.5),transparent); opacity:0; transition:opacity .25s; }
+  .card:hover { background:var(--card-h); border-color:var(--line2); transform:translateY(-3px); }
+  .card:hover::before { opacity:1; }
+  .ic { width:42px; height:42px; border-radius:12px; display:grid; place-items:center; margin-bottom:18px;
+    background:linear-gradient(135deg,rgba(62,224,197,.16),rgba(90,184,255,.08)); border:1px solid rgba(62,224,197,.22); color:var(--accent); }
+  .ic svg { width:20px; height:20px; }
+  .card h3 { margin:0 0 8px; font-size:1.02rem; font-weight:700; letter-spacing:-.02em; }
+  .card p { margin:0; color:var(--mute); font-size:.9rem; line-height:1.6; }
+  .card .new { position:absolute; top:18px; right:18px; font-size:.64rem; font-weight:800; letter-spacing:.08em; color:var(--accent); border:1px solid rgba(62,224,197,.4); border-radius:99px; padding:1px 8px; }
+
+  /* 시작하기 */
+  .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; counter-reset:s; }
+  .step { counter-increment:s; position:relative; background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:28px 24px; }
+  .step::before { content:"0" counter(s); display:block; font-size:2.4rem; font-weight:800; letter-spacing:-.04em; line-height:1; margin-bottom:18px;
+    background:linear-gradient(180deg,var(--accent),rgba(62,224,197,.15)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .step h3 { margin:0 0 8px; font-size:1.05rem; font-weight:700; }
+  .step p { margin:0; color:var(--mute); font-size:.92rem; }
+  .note { display:flex; gap:14px; align-items:flex-start; margin-top:16px; padding:18px 22px; border-radius:14px;
+    background:rgba(216,180,106,.05); border:1px solid rgba(216,180,106,.2); color:#d6c59d; font-size:.9rem; }
+  .note svg { flex:none; width:18px; height:18px; margin-top:2px; color:var(--gold); }
+  .note b { color:#f0dfb5; }
+
+  /* FAQ */
+  .faq { max-width:820px; }
+  details { border-bottom:1px solid var(--line); }
+  details:first-of-type { border-top:1px solid var(--line); }
+  summary { list-style:none; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:20px; padding:22px 4px; font-weight:600; font-size:1.02rem; transition:color .2s; }
+  summary::-webkit-details-marker { display:none; }
+  summary:hover { color:var(--accent); }
+  summary::after { content:""; flex:none; width:10px; height:10px; border-right:2px solid var(--mute); border-bottom:2px solid var(--mute); transform:rotate(45deg) translate(-3px,-3px); transition:transform .25s; }
+  details[open] summary::after { transform:rotate(-135deg) translate(-3px,-3px); }
+  details p { color:var(--mute); margin:0; padding:0 4px 24px; font-size:.94rem; max-width:44em; }
+  kbd { font-family:inherit; font-size:.82em; padding:1px 7px; border-radius:6px; border:1px solid var(--line2); border-bottom-width:2px; background:rgba(255,255,255,.04); color:var(--text); }
+
+  /* 마지막 CTA */
+  .final { text-align:center; padding:80px 32px; border-radius:28px; border:1px solid var(--line);
+    background:radial-gradient(600px 240px at 50% 0%,rgba(62,224,197,.14),transparent 70%),var(--bg2); }
+  .final h2 { margin-bottom:10px; } .final p { color:var(--mute); margin:0 0 32px; }
+  .final .cta { justify-content:center; }
+
+  footer { border-top:1px solid var(--line); padding:40px 0 64px; color:var(--dim); font-size:.84rem; margin-top:104px; }
+  footer .wrap { display:flex; flex-wrap:wrap; justify-content:space-between; gap:16px 40px; }
+  footer .f-brand { color:var(--text); font-weight:700; }
+  footer a { color:var(--mute); text-decoration:none; } footer a:hover { color:var(--accent); }
+  footer .links { display:flex; gap:20px; }
+
+  @media (max-width:980px) { .grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:860px) {
+    .hero{grid-template-columns:1fr; padding:56px 0 96px; gap:64px;}
+    .steps{grid-template-columns:1fr;}
+    nav a:not(.nav-dl){display:none;}
+    .mini{right:12px;} .mini-cap{right:12px;}
+    section{padding:80px 0;}
+  }
+  @media (max-width:540px) { .grid{grid-template-columns:1fr;} .wrap{padding:0 20px;} .brand .a2{height:24px;} }
+  @media (prefers-reduced-motion:reduce) { *{transition:none!important; scroll-behavior:auto!important;} }
 </style>
 </head>
 <body>
-<div class="glow"></div>
-<div class="wrap">
-  <header>
-    <div class="brand"><span class="dot"></span>키아의 Aion2 보스쳌</div>
-    <nav><a href="#features">기능</a><a href="#start">시작하기</a><a href="#faq">FAQ</a></nav>
-  </header>
+<div class="bg"></div>
 
+<header><div class="wrap">
+  <a class="brand" href="#">
+    <span class="logo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2"/><path d="M9 2h6"/></svg></span>
+    <b>Boss<span>Check</span></b><img class="a2" src="data:image/png;base64,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" alt="AION2">
+  </a>
+  <nav>
+    <a href="#features">기능</a><a href="#start">시작하기</a><a href="#faq">FAQ</a>
+    <a class="nav-dl" href="https://github.com/pinlog/aion2bosscheck/releases/latest">다운로드</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
   <div class="hero">
     <div>
-      <div class="eyebrow">AION2 TIME TABLE</div>
+      <span class="pill"><i>NEW</i>서버만 고르면 매칭 그룹 자동 적용</span>
       <h1>아이온2 <em>주간 시간표</em>,<br>보스부터 쟁까지 한눈에</h1>
-      <p class="lead">아티팩트 점령전, 어비스 필드보스, 균열지대와 쟁탈전까지!! <br>컨텐츠 시간을 확인하고 플레이일정을 스케치해보세요.</p>
+      <p class="lead">아티팩트 점령전, 어비스 필드보스, 균열지대와 쟁탈전까지. 컨텐츠 시간을 확인하고 플레이 일정을 미리 그려 보세요.</p>
       <div class="cta">
-        <a id="dl" class="btn primary" href="https://github.com/pinlog/aion2bosscheck/releases/latest">⬇ 최신 버전 다운로드</a>
+        <a id="dl" class="btn primary" href="https://github.com/pinlog/aion2bosscheck/releases/latest">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12"/><path d="m6 11 6 6 6-6"/><path d="M5 20h14"/></svg><span>최신 버전 다운로드</span></a>
+        <a class="btn ghost" href="#features">기능 살펴보기</a>
       </div>
       <div class="meta" id="meta">Windows 10 / 11 · 무료</div>
     </div>
+
     <div class="stage" aria-hidden="true">
-      <div class="mini">
-        <div class="tag">🔥 다가오는 주요 컨텐츠</div>
-        <div class="lk"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
-        <div class="n">목 22:00 | 균열지대</div><div class="c">⏳ 01:23:45</div>
+      <div class="app">
+        <div class="app-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">BossCheck · 목요일</span><span class="v">NEW UPDATE</span></div>
+        <div class="app-body">
+          <div class="row past"><span class="tm">20:00</span><span class="nm">시공 쟁탈전</span><span class="bd">종료</span></div>
+          <div class="row past"><span class="tm">21:20</span><span class="nm">아티팩트 점령전</span><span class="bd">종료</span></div>
+          <div class="row on"><span class="tm">22:00</span><span class="nm">균열지대</span><span class="bd">곧 시작</span></div>
+          <div class="row"><span class="tm">22:30</span><span class="nm">나흐마</span><span class="bd">필드보스</span></div>
+          <div class="row"><span class="tm">23:00</span><span class="nm">시공 쟁탈전</span><span class="bd">쟁</span></div>
+        </div>
       </div>
-      <div class="tbl"><span>20:00 시공쟁탈전</span><span>21:20 아티팩트</span><span class="on">22:00 균열지대</span><span>23:00 시공쟁탈전</span>
-        <span>21:45 필드보스</span><span>22:30 나흐마</span><span>03:51 아그로</span><span>15:51 아그로</span></div>
+      <div class="mini">
+        <div class="tag"><span>🔥 다가오는 주요 컨텐츠</span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+        <div class="n">목 22:00 | 균열지대</div><div class="c">⏳ 00:12:45</div>
+      </div>
+      <div class="mini-cap">게임 화면 위 mini 알림창</div>
     </div>
   </div>
-</div>
+</main>
 
 <section id="features"><div class="wrap">
-  <h2>핵심 기능</h2>
+  <div class="kicker">Features</div>
+  <h2>필요한 시간만, 필요한 순간에</h2>
+  <p class="sub">서버 하나만 고르면 나머지는 BossCheck가 맞춰 드립니다.</p>
   <div class="grid">
-    <div class="card"><div class="ic">🎨</div><h3>서버별 컬러 자동 적용</h3><p>서버를 선택하면 천족·마족에 맞는 컬러로 전체 테이블이 자동으로 바뀝니다.</p></div>
-    <div class="card"><div class="ic">🧭</div><h3>서버 그룹 자동 세팅</h3><p>내 서버의 그룹을 고르면 어비스 아티팩트 점령전과 필드보스 시간이 그룹에 맞게 즉시 정렬됩니다.</p></div>
-    <div class="card"><div class="ic">🔔</div><h3>시작 전 음성 알림</h3><p>알림을 켜 두면 컨텐츠가 시작되기 전에 음성으로 알려 줍니다. 게임에 집중하세요.</p></div>
-    <div class="card"><div class="ic">⏳</div><h3>남은 시간 · 하이라이트</h3><p>다음 컨텐츠까지 남은 시간을 보여 주고, 진행 중이거나 곧 시작하는 컨텐츠는 하이라이트로 표시합니다.</p></div>
-    <div class="card"><div class="ic">🧱</div><h3>아그로 젠 타임 직접 입력</h3><p>남은 시간을 입력하면 12시간 주기로 타임테이블에 바로 반영됩니다.</p></div>
-    <div class="card"><div class="ic">🪟</div><h3>창 크기 · 위치 기억</h3><p>원하는 크기로 조절하면 다음 실행 때 같은 위치와 설정으로 열립니다.</p></div>
-    <div class="card"><div class="ic">📌</div><h3>게임 위 mini 알림창</h3><p>다가오는 주요 컨텐츠를 게임 화면 위에 작게 띄웁니다. 위치·크기·투명도를 조절할 수 있습니다.</p></div>
-    <div class="card"><div class="ic">🔄</div><h3>업데이트</h3><p>새 버전이 나오면 NEW UPDATE 표시가 뜹니다. 눌러서 확인만 하면 자동으로 설치되고 다시 실행돼요.</p></div>
-    <div class="card"><div class="ic">🔒</div><h3>게임과 독립</h3><p>게임 클라이언트와 통신하거나 게임 데이터를 읽지 않는, 시간표 계산 전용 프로그램입니다.</p></div>
+    <div class="card"><span class="new">NEW</span><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg></div>
+      <h3>매칭 그룹 자동 적용</h3><p>서버만 선택하면 매칭 그룹이 자동으로 적용되어, 아티팩트 점령전과 나흐마 시간이 내 서버 기준으로 정렬됩니다.</p></div>
+    <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="1.5"/><circle cx="17.5" cy="10.5" r="1.5"/><circle cx="8.5" cy="7.5" r="1.5"/><circle cx="6.5" cy="12.5" r="1.5"/><path d="M12 2a10 10 0 0 0 0 20c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1.1.9-2 2-2h2.4A5.6 5.6 0 0 0 22 9.8C22 5.5 17.5 2 12 2z"/></svg></div>
+      <h3>서버별 컬러 테마</h3><p>서버를 선택하면 천족·마족에 맞는 컬러로 전체 테이블이 바뀝니다.</p></div>
+    <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg></div>
+      <h3>시작 전 음성 알림</h3><p>알림을 켜 두면 컨텐츠가 시작되기 전에 음성으로 알려 줍니다. 게임에만 집중하세요.</p></div>
+    <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2"/><path d="M9 2h6"/></svg></div>
+      <h3>남은 시간 · 하이라이트</h3><p>다음 컨텐츠까지 남은 시간을 보여 주고, 진행 중이거나 곧 시작하는 컨텐츠를 강조합니다.</p></div>
+    <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><rect x="12" y="11" width="7" height="7" rx="1"/></svg></div>
+      <h3>게임 위 mini 알림창</h3><p>다가오는 주요 컨텐츠를 게임 화면 위에 작게 띄웁니다. 위치·크기·투명도를 조절할 수 있습니다.</p></div>
+    <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg></div>
+      <h3>창 크기 · 위치 기억</h3><p>원하는 크기와 위치로 맞춰 두면 다음 실행 때도 그대로 열립니다.</p></div>
+    <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg></div>
+      <h3>원클릭 업데이트</h3><p>새 버전이 나오면 NEW UPDATE 표시가 뜹니다. 눌러서 확인만 하면 자동으로 설치되고 다시 실행돼요.</p></div>
+    <div class="card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div>
+      <h3>게임과 완전히 독립</h3><p>게임 클라이언트와 통신하거나 게임 데이터를 읽지 않는, 시간표 계산 전용 프로그램입니다.</p></div>
   </div>
 </div></section>
 
-
-
 <section id="start"><div class="wrap">
-  <h2>시작하기</h2><p class="sub">설치부터 사용까지 3단계</p>
+  <div class="kicker">Get started</div>
+  <h2>설치부터 알림까지, 3단계</h2>
+  <p class="sub">처음 한 번만 설정하면 끝입니다.</p>
   <div class="steps">
-    <div class="step"><h3>다운로드 · 설치</h3><p>위의 다운로드 버튼으로 설치 파일을 받아 실행하세요. 설치 위치를 고를 수 있습니다.</p></div>
-    <div class="step"><h3>서버 · 그룹 선택</h3><p>[서버 설정]에서 내 서버를 고르고 그룹을 맞추면 시간표가 즉시 내 서버 기준으로 바뀝니다.</p></div>
+    <div class="step"><h3>다운로드 · 설치</h3><p>다운로드 버튼으로 설치 파일을 받아 실행하세요. 설치 위치를 고를 수 있습니다.</p></div>
+    <div class="step"><h3>서버 선택</h3><p>[서버 설정]에서 내 서버만 고르면 매칭 그룹까지 자동으로 적용되어 시간표가 바로 내 서버 기준으로 바뀝니다.</p></div>
     <div class="step"><h3>알림 켜기</h3><p>음성 알림을 켜고, 필요하면 mini 버튼으로 게임 위 알림창을 띄워 두세요.</p></div>
   </div>
-  <div class="note"><b>내 그룹 확인 방법</b> · 게임사 공지(<a href="https://aion2.plaync.com/ko-kr/board/cm_story/list" target="_blank" rel="noopener" style="color:var(--warm)">CM아지트</a>)에서 내 서버의 <b>매칭 그룹</b>을 확인한 뒤, 그룹 편성표(<a href="https://www.inven.co.kr/board/aion2/6444/2359" target="_blank" rel="noopener" style="color:var(--warm)">인벤 소개글</a>)에서 내가 속한 그룹을 찾으세요.</div>
-  <div class="note" style="margin-top:12px">처음 실행할 때 Windows가 “PC를 보호했습니다” 화면을 보여 줄 수 있어요. <b>추가 정보 → 실행</b>을 누르면 계속 진행됩니다. (개인이 만든 무료 프로그램이라 코드 서명이 없습니다.)</div>
+  <div class="note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+    <div>처음 실행할 때 Windows가 “PC를 보호했습니다” 화면을 보여 줄 수 있어요. <b>추가 정보 → 실행</b>을 누르면 계속 진행됩니다. (개인이 만든 무료 프로그램이라 코드 서명이 없습니다.)</div></div>
 </div></section>
 
 <section id="faq"><div class="wrap">
-  <h2>자주 묻는 질문</h2><p class="sub">&nbsp;</p>
-  <details><summary>무료인가요?</summary><p>네, 무료입니다. 광고도 없습니다.</p></details>
-  <details><summary>게임에 영향을 주거나 계정에 문제가 생기지 않나요?</summary><p>이 프로그램은 게임을 조작하거나 게임 데이터를 읽지 않고, 정해진 일정을 계산해서 보여 주는 시간표입니다. 다만 엔씨소프트와 무관한 비공식 팬 프로그램이며, 사용에 대한 책임은 사용자에게 있습니다.</p></details>
-  <details><summary>업데이트는 어떻게 하나요?</summary><p>새 버전이 있으면 프로그램 상단 버전 옆에 NEW UPDATE가 표시됩니다. 눌러서 확인하면 자동으로 받아 설치하고 다시 실행됩니다. 처음 버전(1.0.0)을 쓰고 계시다면 이 페이지에서 최신 설치 파일을 한 번만 직접 설치해 주세요.</p></details>
-  <details><summary>설정이나 입력한 값은 어디에 저장되나요?</summary><p>내 PC에만 저장됩니다. 서버 선택, 창 위치, 아그로 기준 시각 등은 외부로 전송되지 않습니다.</p></details>
-  <details><summary>게임 위 mini 알림창이 안 보여요.</summary><p>게임을 “창모드” 또는 “전체 창모드”로 실행해 주세요. 전용 전체화면에서는 다른 창이 가려질 수 있습니다. 잠금 해제는 자물쇠를 Alt + 클릭하거나 Ctrl + Alt + L 입니다.</p></details>
+  <div class="kicker">FAQ</div>
+  <h2>자주 묻는 질문</h2>
+  <p class="sub">궁금한 점이 더 있다면 인벤 소개글에 남겨 주세요.</p>
+  <div class="faq">
+    <details><summary>무료인가요?</summary><p>네, 무료입니다. 광고도 없습니다.</p></details>
+    <details><summary>게임에 영향을 주거나 계정에 문제가 생기지 않나요?</summary><p>이 프로그램은 게임을 조작하거나 게임 데이터를 읽지 않고, 정해진 일정을 계산해서 보여 주는 시간표입니다. 다만 엔씨소프트와 무관한 비공식 팬 프로그램이며, 사용에 대한 책임은 사용자에게 있습니다.</p></details>
+    <details><summary>매칭 그룹은 따로 확인해야 하나요?</summary><p>아니요. 서버만 선택하면 매칭 그룹이 자동으로 적용됩니다. 그룹 편성이 바뀌면 업데이트로 반영됩니다.</p></details>
+    <details><summary>업데이트는 어떻게 하나요?</summary><p>새 버전이 있으면 프로그램 상단 버전 옆에 NEW UPDATE가 표시됩니다. 눌러서 확인하면 자동으로 받아 설치하고 다시 실행됩니다. 자동 업데이트가 되지 않는 예전 버전이라면 이 페이지에서 최신 설치 파일을 한 번만 직접 설치해 주세요.</p></details>
+    <details><summary>설정은 어디에 저장되나요?</summary><p>내 PC에만 저장됩니다. 서버 선택, 창 위치, 알림 설정 등은 외부로 전송되지 않습니다.</p></details>
+    <details><summary>게임 위 mini 알림창이 안 보여요.</summary><p>게임을 “창모드” 또는 “전체 창모드”로 실행해 주세요. 전용 전체화면에서는 다른 창이 가려질 수 있습니다. 잠금 해제는 자물쇠를 <kbd>Alt</kbd> + 클릭하거나 <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>L</kbd> 입니다.</p></details>
+  </div>
 </div></section>
 
+<div class="wrap">
+  <div class="final">
+    <h2>이번 주 일정, 놓치지 마세요</h2>
+    <p>Windows 10 / 11 · 무료 · 광고 없음</p>
+    <div class="cta"><a id="dl2" class="btn primary" href="https://github.com/pinlog/aion2bosscheck/releases/latest">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12"/><path d="m6 11 6 6 6-6"/><path d="M5 20h14"/></svg><span>BossCheck 다운로드</span></a></div>
+  </div>
+</div>
+
 <footer><div class="wrap">
-  <div>키아의 Aion2 보스쳌 · <span id="ver">–</span></div>
-  <div style="margin-top:6px">아이온2는 엔씨소프트의 상표이며, 이 프로그램은 엔씨소프트와 관계없는 비공식 팬 프로그램입니다. · <a href="https://www.inven.co.kr/board/aion2/6444/2359" target="_blank" rel="noopener">인벤 소개글 / 문의</a> · <a href="https://github.com/pinlog/aion2bosscheck/releases">모든 버전</a></div>
+  <div>
+    <div class="f-brand">BossCheck <span id="ver" style="color:var(--dim);font-weight:500"></span></div>
+    <div style="margin-top:6px;max-width:560px">아이온2는 엔씨소프트의 상표이며, 이 프로그램은 엔씨소프트와 관계없는 비공식 팬 프로그램입니다.</div>
+  </div>
+  <div class="links">
+    <a href="https://www.inven.co.kr/board/aion2/6444/2359" target="_blank" rel="noopener">인벤 소개글 / 문의</a>
+    <a href="https://github.com/pinlog/aion2bosscheck/releases" target="_blank" rel="noopener">모든 버전</a>
+  </div>
 </div></footer>
 
 <script>
@@ -157,9 +296,10 @@
       const d = await r.json();
       const exe = (d.assets || []).find(a => /\.exe$/i.test(a.name));
       const ver = (d.tag_name || '').replace(/^v/, '');
-      if (exe) document.getElementById('dl').href = exe.browser_download_url;
+      const btns = [document.getElementById('dl'), document.getElementById('dl2')];
+      if (exe) btns.forEach(b => b.href = exe.browser_download_url);
       if (ver) {
-        document.getElementById('dl').textContent = '⬇ v' + ver + ' 다운로드';
+        document.querySelector('#dl span').textContent = 'v' + ver + ' 다운로드';
         document.getElementById('ver').textContent = 'v' + ver;
         const date = d.published_at ? new Date(d.published_at).toLocaleDateString('ko-KR') : '';
         const mb = exe ? (exe.size / 1048576).toFixed(0) + 'MB' : '';
